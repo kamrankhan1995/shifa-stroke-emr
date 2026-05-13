@@ -1322,8 +1322,8 @@ elif st.session_state.ui["screen"] == "Phase 5: Daily Rounds & Progress Notes":
     with st.expander("➕ Add New Progress Note", expanded=False):
         day_num = st.selectbox("Day of Note:", ["1","2","3"], key="pn_day_select")
         c1, c2, c3 = st.columns(3)
-        with c1: pn_date   = st.date_input("Date:", value=datetime.date.today(), key="pn_date")
-        with c2: pn_time   = st.time_input("Time:", value=datetime.datetime.now().time(), key="pn_time")
+        with c1: pn_date    = st.date_input("Date:", value=datetime.date.today(), key="pn_date")
+        with c2: pn_time    = st.time_input("Time:", value=datetime.datetime.now().time(), key="pn_time")
         with c3: pn_author = st.text_input("Author (Name & ID):", value=cd("resident") or "", key="pn_auth")
 
         st.subheader(f"Day {day_num} Progress Note")
@@ -1341,20 +1341,6 @@ elif st.session_state.ui["screen"] == "Phase 5: Daily Rounds & Progress Notes":
             pn_gcs_e = st.text_input("GCS E:", key="pn_gcse2")
             pn_gcs_m = st.text_input("GCS M:", key="pn_gcsm2")
             pn_gcs_v = st.text_input("GCS V:", key="pn_gcsv2")
-
-        # Reusing the smart options list for daily notes
-        opts_speech = ["Normal", "Mild Dysarthria", "Severe Dysarthria", "Aphasia", "Mute", "Intubated"]
-        opts_pupils = ["Equal & Reactive", "Unequal", "Sluggish", "Fixed/Dilated"]
-        opts_eom = ["Normal", "Partial Gaze Palsy", "Forced Deviation"]
-        opts_vis = ["Normal", "Partial Hemianopia", "Complete Hemianopia", "Bilateral Blindness"]
-        opts_face = ["Symmetric", "Minor Paralysis", "Partial Paralysis", "Complete Paralysis"]
-        opts_power = ["5/5 Normal", "4/5 Mild Weakness", "3/5 Anti-Gravity", "2/5 Not Anti-Gravity", "1/5 Flicker", "0/5 No Movement"]
-        opts_tone = ["Normal", "Flaccid / Hypotonic", "Spastic / Hypertonic", "Rigidity"]
-        opts_sens = ["Normal", "Mild/Moderate Loss", "Severe/Total Loss"]
-        opts_cer = ["Absent", "Present in 1 limb", "Present in 2+ limbs"]
-        opts_ref = ["Normal (2+)", "Brisk (3+)", "Depressed (1+)", "Absent (0)"]
-        opts_pla = ["Flexor (Downward) Bilateral", "Extensor (Upgoing) Right", "Extensor (Upgoing) Left", "Extensor Bilateral", "Equivocal"]
-        opts_somi = ["Negative (Supple Neck)", "Positive (Neck Stiffness / Signs present)"]
 
         opts_sp = ["Normal", "Mild Dysarthria", "Severe Dysarthria", "Aphasia", "Mute", "Intubated", "Other (See Remarks)"]
         opts_pup = ["Equal & Reactive", "Unequal", "Sluggish", "Fixed/Dilated", "Other (See Remarks)"]
@@ -1400,7 +1386,7 @@ elif st.session_state.ui["screen"] == "Phase 5: Daily Rounds & Progress Notes":
                 pn_pla_l = st.selectbox("Left Plantar:", opts_pla, key="pn_pla_l")
             pn_sens  = st.selectbox("Sensations:", opts_sens, key="pn_sens")
             pn_cereb = st.selectbox("Cerebellar / Ataxia:", opts_cer, key="pn_cer")
-            
+
         st.markdown("**Systemic & Remarks**")
         sys1, sys2 = st.columns([1, 2])
         with sys1:
@@ -1431,41 +1417,23 @@ elif st.session_state.ui["screen"] == "Phase 5: Daily Rounds & Progress Notes":
             pn_bowel   = st.text_input("Bowel Movement:", key="pn_bm2")
             pn_swallow = st.text_input("Swallowing:", key="pn_sw2")
             pn_cath    = st.text_input("Urinary Cath:", key="pn_cath2")
+            pn_cell    = st.text_input("Cellulitis:", key="pn_cell")
         with c2:
             pn_io  = st.text_input("Input/Output:", key="pn_io2")
             pn_oob = st.text_input("Out of Bed:", key="pn_oob2")
-            pn_asp = st.text_input("Aspiration / DVT:", key="pn_asp2")
-            pn_cell= st.text_input("Cellulitis:", key="pn_cell")
+            pn_asp = st.text_input("Aspiration:", key="pn_asp2")
+            pn_dvt = st.text_input("DVT:", key="pn_dvt2")
 
         banner("Assessment, Plan & Rehab", "purple", "📋")
-        pn_assess = st.text_area("Resident Assessment & Plan:", key="pn_assess2", height=80)
+        pn_assess = st.text_area("Resident Assessment:", key="pn_assess2", height=80)
+        pn_plan   = st.text_area("Plan:", key="pn_plan2", height=80)
         pn_attending = st.text_area("Consultant / Attending Note (Rounds):", key="pn_attending", height=60)
-        
-        c_r1, c_r2, c_r3 = st.columns(3)
-        with c_r1: pn_pt = st.text_area("Physical Therapy:", key="pn_pt2", height=60)
-        with c_r2: pn_st = st.text_area("Speech Therapy:", key="pn_st2", height=60)
-        with c_r3: pn_ot = st.text_area("Occupational Therapy:", key="pn_ot2", height=60)
-        pn_dc_days = st.text_input("Discharge expected in (days):", key="pn_dcdays2")
-        c1, c2 = st.columns(2)
-        with c1:
-            pn_bedsore = st.text_input("Bed Sore:",       key="pn_bs2")
-            pn_bowel   = st.text_input("Bowel Movement:", key="pn_bm2")
-            pn_swallow = st.text_input("Swallowing:",     key="pn_sw2")
-            pn_cath    = st.text_input("Urinary Cath:",   key="pn_cath2")
-        with c2:
-            pn_io  = st.text_input("Input/Output:", key="pn_io2")
-            pn_oob = st.text_input("Out of Bed:",   key="pn_oob2")
-            pn_asp = st.text_input("Aspiration:",   key="pn_asp2")
-            pn_dvt = st.text_input("DVT:",          key="pn_dvt2")
-
-        banner("Assessment & Plan", "blue", "📋")
-        pn_assess = st.text_area("Assessment:", key="pn_assess2", height=80)
-        pn_plan   = st.text_area("Plan:",       key="pn_plan2",   height=80)
 
         banner("Rehabilitation", "green", "🦽")
-        pn_pt = st.text_area("Physical Therapy Plan:",    key="pn_pt2", height=60)
-        pn_st = st.text_area("Speech Therapy Plan:",      key="pn_st2", height=60)
-        pn_ot = st.text_area("Occupational Therapy Plan:",key="pn_ot2", height=60)
+        c_r1, c_r2, c_r3 = st.columns(3)
+        with c_r1: pn_pt = st.text_area("Physical Therapy Plan:", key="pn_pt2", height=60)
+        with c_r2: pn_st = st.text_area("Speech Therapy Plan:", key="pn_st2", height=60)
+        with c_r3: pn_ot = st.text_area("Occupational Therapy Plan:", key="pn_ot2", height=60)
         pn_dc_days = st.text_input("Discharge expected in (days):", key="pn_dcdays2")
 
         if st.button("💾 Save Progress Note", key="btn_savenote"):
@@ -1478,8 +1446,9 @@ elif st.session_state.ui["screen"] == "Phase 5: Daily Rounds & Progress Notes":
                     "gcs": f"E{pn_gcs_e} M{pn_gcs_m} V{pn_gcs_v}",
                     "exam": f"Speech: {pn_speech} | Power(R/L): Arms {pn_pow_ra}/{pn_pow_la}, Legs {pn_pow_rl}/{pn_pow_ll} | Tone(R/L): {pn_tone_r}/{pn_tone_l} | Plantars(R/L): {pn_pla_r}/{pn_pla_l} | Reflexes(R/L): {pn_ref_r}/{pn_ref_l} | Sens: {pn_sens} | Cereb: {pn_cereb} | NIHSS: {pn_nihss}",
                     "systemic": f"CVS/Resp: {pn_cvs_resp} | Remarks: {pn_remarks}",
-                    "nursing": f"Bedsore: {pn_bedsore} | Bowel: {pn_bowel} | Swallow: {pn_swallow} | Cath: {pn_cath} | IO: {pn_io} | OOB: {pn_oob} | Aspiration: {pn_asp} | DVT: {pn_dvt}",
-                    "assessment": pn_assess, "plan": pn_plan,
+                    "nursing": f"Bedsore: {pn_bedsore} | Bowel: {pn_bowel} | Swallow: {pn_swallow} | Cath: {pn_cath} | Cellulitis: {pn_cell} | IO: {pn_io} | OOB: {pn_oob} | Aspiration: {pn_asp} | DVT: {pn_dvt}",
+                    "assessment": f"Resident: {pn_assess} | Attending: {pn_attending}",
+                    "plan": pn_plan,
                     "rehab": f"PT: {pn_pt}\nST: {pn_st}\nOT: {pn_ot}",
                     "dc_days": pn_dc_days, "role": current_role(),
                 }
@@ -1502,7 +1471,7 @@ elif st.session_state.ui["screen"] == "Phase 5: Daily Rounds & Progress Notes":
             if note.get("dc_days"):
                 st.markdown(f"**Discharge in:** {note['dc_days']} days")
             st.caption(f"Entered by: {note['role']} — {note['author']}")
-
+            
 # ── SCREEN: S10 — JCI VARIANCE AUDIT ─────────────────────────────────────
 elif st.session_state.ui["screen"] == "Variance Audit":
     page_header("S10: JCI Variance Tracking & Audit Dashboard")
