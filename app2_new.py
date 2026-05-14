@@ -27,66 +27,67 @@ st.set_page_config(
 )
 
 # ═══════════════════════════════════════════════════════════════════════════
-# CSS — ENTERPRISE HEALTHCARE THEME
+# CSS — ENTERPRISE HEALTHCARE THEME (ENHANCED GRAPHICS)
 # ═══════════════════════════════════════════════════════════════════════════
 @st.cache_resource
 def get_css() -> str:
     return """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 *, *::before, *::after { box-sizing: border-box; }
 html, body, [class*="css"] {
     font-family: 'Inter', 'Segoe UI', Arial, sans-serif !important;
-    font-size: 14px; line-height: 1.6; color: #1a1a2e;
+    font-size: 15px; /* Increased base font size */
+    line-height: 1.6; color: #0F172A; /* Darker text for maximum contrast */
 }
 .main .block-container { padding: 1.5rem 2rem 2rem 2rem !important; max-width: 1400px !important; }
 
 /* SIDEBAR STYLING */
 [data-testid="stSidebar"] {
-    background: linear-gradient(175deg, #0B2545 0%, #134074 50%, #13315C 100%) !important;
-    box-shadow: 4px 0 20px rgba(11,37,69,0.3);
+    background: linear-gradient(175deg, #0B2545 0%, #0F3460 50%, #13315C 100%) !important;
+    box-shadow: 4px 0 25px rgba(11,37,69,0.4);
 }
-[data-testid="stSidebar"] * { color: #E8F0FE !important; }
-
-/* FIX: Ensure dropdown options in the sidebar are dark and visible */
-div[data-baseweb="popover"] * { color: #1a1a2e !important; }
-div[data-baseweb="select"] * { color: #1a1a2e !important; }
-
-[data-testid="stSidebar"] .stRadio label { font-size: 0.85rem !important; font-weight: 500 !important; padding: 4px 0; color: #B8D0E8 !important; }
-[data-testid="stSidebar"] .stRadio label:hover { color: #ffffff !important; }
-[data-testid="stSidebar"] hr { border-color: rgba(255,255,255,0.15) !important; }
+[data-testid="stSidebar"] * { color: #F8FAFC !important; }
+div[data-baseweb="popover"] * { color: #0F172A !important; }
+div[data-baseweb="select"] * { color: #0F172A !important; }
+[data-testid="stSidebar"] .stRadio label { font-size: 0.95rem !important; font-weight: 600 !important; padding: 6px 0; color: #CBD5E1 !important; transition: all 0.2s ease; }
+[data-testid="stSidebar"] .stRadio label:hover { color: #ffffff !important; transform: translateX(4px); }
+[data-testid="stSidebar"] hr { border-color: rgba(255,255,255,0.2) !important; }
 [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 { color: #ffffff !important; border: none !important; }
-[data-testid="stSidebar"] .stSelectbox label { color: #B8D0E8 !important; }
+[data-testid="stSidebar"] .stSelectbox label { color: #E2E8F0 !important; font-weight: 600 !important; }
 
 /* HEADER STYLING */
 .hospital-header {
-    background: linear-gradient(90deg, #0B2545 0%, #134074 60%, #1565C0 100%);
-    color: #ffffff; padding: 16px 28px; border-radius: 10px; margin-bottom: 20px;
+    background: linear-gradient(90deg, #0B2545 0%, #134074 60%, #1E3A8A 100%);
+    color: #ffffff; padding: 18px 30px; border-radius: 12px; margin-bottom: 24px;
     display: flex; align-items: center; justify-content: space-between;
-    box-shadow: 0 4px 20px rgba(11,37,69,0.25);
+    box-shadow: 0 8px 25px rgba(11,37,69,0.3);
 }
-.hospital-header .hosp-name { font-size: 1.2rem; font-weight: 800; letter-spacing: 0.5px; color: #ffffff; }
-.hospital-header .screen-title { font-size: 1.05rem; font-weight: 600; color: #B8D0E8; }
-.hospital-header .meta { font-size: 0.75rem; color: rgba(255,255,255,0.65); text-align: right; line-height: 1.8; }
-.role-badge { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; }
-.role-physician  { background: #1B4332; color: #95D5B2; }
-.role-nurse      { background: #7B2D8B; color: #E2B4F0; }
-.role-allied     { background: #B45309; color: #FDE68A; }
+.hospital-header .hosp-name { font-size: 1.3rem; font-weight: 900; letter-spacing: 0.5px; color: #ffffff; }
+.hospital-header .screen-title { font-size: 1.15rem; font-weight: 700; color: #93C5FD; }
+.hospital-header .meta { font-size: 0.85rem; color: rgba(255,255,255,0.8); text-align: right; line-height: 1.8; font-weight: 500; }
+.role-badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+.role-physician  { background: #064E3B; color: #6EE7B7; }
+.role-nurse      { background: #4A044E; color: #D8B4FE; }
+.role-allied     { background: #78350F; color: #FDE68A; }
 .role-admin      { background: #1E3A8A; color: #93C5FD; }
-.role-readonly   { background: #4B5563; color: #D1D5DB; }
+.role-readonly   { background: #374151; color: #D1D5DB; }
 
-/* CARDS AND BANNERS */
-.card { border-radius: 10px; padding: 14px 18px; margin: 10px 0; border-left: 5px solid transparent; }
-.card-info    { background: #EFF6FF; border-color: #3B82F6; }
-.card-success { background: #F0FDF4; border-color: #22C55E; }
-.card-warning { background: #FFFBEB; border-color: #F59E0B; }
-.card-danger  { background: #FEF2F2; border-color: #EF4444; }
-.card-purple  { background: #FAF5FF; border-color: #9333EA; }
-.card-teal    { background: #F0FDFA; border-color: #14B8A6; }
+/* CARDS AND BANNERS WITH HOVER EFFECTS */
+.card { 
+    border-radius: 12px; padding: 16px 20px; margin: 12px 0; border-left: 6px solid transparent; 
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+.card-info    { background: #EFF6FF; border-color: #2563EB; }
+.card-success { background: #F0FDF4; border-color: #16A34A; }
+.card-warning { background: #FFFBEB; border-color: #D97706; }
+.card-danger  { background: #FEF2F2; border-color: #DC2626; }
 .section-banner {
-    padding: 9px 18px; border-radius: 8px; font-weight: 700; font-size: 0.88rem;
-    letter-spacing: 0.3px; margin: 16px 0 10px 0; text-transform: uppercase;
-    display: flex; align-items: center; gap: 8px;
+    padding: 10px 20px; border-radius: 8px; font-weight: 800; font-size: 0.95rem;
+    letter-spacing: 0.5px; margin: 20px 0 12px 0; text-transform: uppercase;
+    display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 .banner-blue   { background: #1E40AF; color: #ffffff; }
 .banner-green  { background: #14532D; color: #ffffff; }
@@ -94,54 +95,73 @@ div[data-baseweb="select"] * { color: #1a1a2e !important; }
 .banner-red    { background: #7F1D1D; color: #ffffff; }
 .banner-purple { background: #4C1D95; color: #ffffff; }
 .banner-teal   { background: #134E4A; color: #ffffff; }
-.banner-grey   { background: #374151; color: #ffffff; }
+.banner-grey   { background: #334155; color: #ffffff; }
 
-/* KPI GRIDS */
-.kpi-grid { display: flex; gap: 12px; flex-wrap: wrap; margin: 14px 0; }
-.kpi-box { border-radius: 10px; padding: 16px 20px; text-align: center; flex: 1; min-width: 120px; }
-.kpi-primary   { background: linear-gradient(135deg, #1E40AF, #3B82F6); color: #fff; }
-.kpi-success   { background: linear-gradient(135deg, #14532D, #22C55E); color: #fff; }
-.kpi-warning   { background: linear-gradient(135deg, #92400E, #F59E0B); color: #fff; }
+/* KPI GRIDS WITH POP-UP EFFECTS */
+.kpi-grid { display: flex; gap: 16px; flex-wrap: wrap; margin: 16px 0; }
+.kpi-box { 
+    border-radius: 12px; padding: 20px; text-align: center; flex: 1; min-width: 140px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.kpi-box:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+.kpi-primary   { background: linear-gradient(135deg, #1E3A8A, #3B82F6); color: #fff; }
+.kpi-success   { background: linear-gradient(135deg, #064E3B, #10B981); color: #fff; }
+.kpi-warning   { background: linear-gradient(135deg, #78350F, #F59E0B); color: #fff; }
 .kpi-danger    { background: linear-gradient(135deg, #7F1D1D, #EF4444); color: #fff; }
-.kpi-purple    { background: linear-gradient(135deg, #4C1D95, #9333EA); color: #fff; }
-.kpi-neutral   { background: linear-gradient(135deg, #1F2937, #374151); color: #fff; }
-.kpi-val { font-size: 2rem; font-weight: 800; display: block; line-height: 1.1; }
-.kpi-lbl { font-size: 0.72rem; opacity: 0.85; margin-top: 4px; display: block; font-weight: 500; }
+.kpi-neutral   { background: linear-gradient(135deg, #334155, #64748B); color: #fff; }
+.kpi-val { font-size: 2.2rem; font-weight: 900; display: block; line-height: 1.1; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
+.kpi-lbl { font-size: 0.85rem; opacity: 0.9; margin-top: 6px; display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;}
 
-/* DASHBOARD TILE BUTTONS OVERRIDE */
+/* DASHBOARD TILE BUTTONS WITH ENHANCED POP-UP AND GLOW */
 div[data-testid="stButton"] button {
     height: 100% !important;
-    min-height: 110px !important;
-    border-radius: 12px !important;
-    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%) !important;
-    border: 2px solid #3B82F6 !important;
-    color: #1a1a2e !important;
-    white-space: pre-wrap !important; /* CRITICAL: Allows text to be on multiple lines */
-    font-weight: 600 !important;
-    font-size: 1rem !important;
-    transition: all 0.2s ease !important;
+    min-height: 120px !important;
+    border-radius: 16px !important;
+    background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%) !important;
+    border: 2px solid #94A3B8 !important;
+    color: #0F172A !important;
+    white-space: pre-wrap !important;
+    font-weight: 700 !important;
+    font-size: 1.1rem !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05) !important;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
 }
 div[data-testid="stButton"] button:hover {
-    transform: translateY(-3px) !important;
-    box-shadow: 0 6px 15px rgba(59,130,246,0.3) !important;
+    transform: translateY(-6px) scale(1.03) !important;
+    box-shadow: 0 15px 35px rgba(37,99,235,0.3) !important;
+    border-color: #2563EB !important;
+    background: linear-gradient(135deg, #EFF6FF 0%, #BFDBFE 100%) !important;
+    color: #1E3A8A !important;
 }
 
+/* HIGH VISIBILITY INPUT LABELS */
+.stCheckbox label { font-size: 0.95rem !important; color: #1E293B !important; font-weight: 500 !important; }
+.stSelectbox label, .stTextInput label, .stNumberInput label, .stDateInput label, .stTimeInput label, .stTextArea label, .stRadio label { 
+    font-size: 0.95rem !important; 
+    font-weight: 700 !important; 
+    color: #0F172A !important; 
+    margin-bottom: 4px !important;
+}
+.stExpander summary { font-weight: 700 !important; font-size: 1rem !important; color: #1E3A8A !important; }
+[data-testid="stExpander"] summary { background: #F8FAFC !important; border-radius: 8px; border: 1px solid #E2E8F0; padding: 12px !important; }
+[data-testid="stExpander"] summary:hover { background: #F1F5F9 !important; border-color: #CBD5E1; }
+
+/* HEADINGS */
+h1 { color: #0B2545 !important; font-size: 1.8rem !important; font-weight: 900 !important; }
+h2 { color: #134074 !important; font-size: 1.5rem !important; font-weight: 800 !important; }
+h3 { color: #1E40AF !important; font-size: 1.2rem !important; font-weight: 800 !important; border-bottom: 2px solid #BFDBFE !important; padding-bottom: 6px !important; margin-top: 20px !important;}
+h4 { color: #1D4ED8 !important; font-size: 1.05rem !important; font-weight: 700 !important; }
+h5 { color: #334155 !important; font-size: 0.95rem !important; font-weight: 700 !important; }
+
 /* MISC STYLING */
-.readonly-banner { background: linear-gradient(90deg, #374151, #4B5563); color: #F9FAFB; padding: 10px 18px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-.variance-row { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: 10px 14px; margin: 6px 0; font-size: 0.82rem; }
-.variance-resolved { background: #F0FDF4; border: 1px solid #BBF7D0; }
-h1 { color: #0B2545 !important; font-size: 1.6rem !important; font-weight: 800 !important; }
-h2 { color: #134074 !important; font-size: 1.3rem !important; font-weight: 700 !important; }
-h3 { color: #1E40AF !important; font-size: 1.05rem !important; font-weight: 600 !important; border-bottom: 2px solid #BFDBFE !important; padding-bottom: 4px !important; }
-h4 { color: #1D4ED8 !important; font-size: 0.95rem !important; font-weight: 600 !important; }
-h5 { color: #374151 !important; font-size: 0.88rem !important; font-weight: 600 !important; }
-.stCheckbox label { font-size: 0.88rem !important; color: #374151 !important; }
-.stSelectbox label, .stTextInput label, .stNumberInput label, .stDateInput label, .stTimeInput label, .stTextArea label, .stRadio label { font-size: 0.85rem !important; }
-.stExpander summary { font-weight: 600 !important; font-size: 0.9rem !important; }
-[data-testid="stExpander"] summary { background: #F8FAFC !important; border-radius: 8px; }
-button[data-baseweb="tab"] { font-weight: 600 !important; font-size: 0.88rem !important; }
-button[data-baseweb="tab"][aria-selected="true"] { border-bottom: 3px solid #1E40AF !important; color: #1E40AF !important; }
-[data-testid="stDataEditor"] { border-radius: 10px; overflow: hidden; }
+.readonly-banner { background: linear-gradient(90deg, #334155, #475569); color: #F8FAFC; padding: 12px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+button[data-baseweb="tab"] { font-weight: 700 !important; font-size: 0.95rem !important; }
+button[data-baseweb="tab"][aria-selected="true"] { border-bottom: 4px solid #1E40AF !important; color: #1E40AF !important; background: #EFF6FF !important; border-radius: 8px 8px 0 0; }
+[data-testid="stDataEditor"] { border-radius: 12px; overflow: hidden; border: 1px solid #CBD5E1; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
 @media print {
     [data-testid="stSidebar"] { display: none !important; }
@@ -261,7 +281,7 @@ def init_state():
         "dob": datetime.date(1970, 1, 1),
         "pres_date": datetime.date.today(),
         "pres_time": datetime.datetime.now().time(),
-        "location": "ER", "resident": "", "consultant": "",
+        "location": "ED", "resident": "", "consultant": "",
         "sudden_onset": False,
         "r_loc": False, "r_seizures": False,
         "r_face": False, "r_arm": False, "r_leg": False,
@@ -763,6 +783,20 @@ if st.session_state.ui["screen"] == "🏠 Dashboard":
         unsafe_allow_html=True
     )
 
+    # Calculate pathway progress (PASTE THIS BLOCK HERE)
+    steps_completed = sum([
+        bool(cd("rosier_done")), 
+        bool(cd("nihss_done")), 
+        bool(cd("routing_done")), 
+        bool(od("s1_d1_signed") or od("s2_d1_signed") or od("s3_d1_signed"))
+    ])
+    progress_pct = int((steps_completed / 4) * 100)
+    
+    st.markdown(f"**Pathway Completion: {progress_pct}%**")
+    st.progress(progress_pct)
+    st.markdown("<br>", unsafe_allow_html=True)
+    # END OF PASTED BLOCK
+
     if dtn_mins and dtn_status == "danger":
         card(f"🚨 **Door-to-Needle time is {dtn_mins:.0f} minutes — EXCEEDS 60-minute target.** "
              f"Review delays and document variance.", "danger")
@@ -827,8 +861,8 @@ elif st.session_state.ui["screen"] == "Phase 1: ER Code Activation (Duty Dr)":
         v = st.selectbox("Sex", ["Male","Female","Other"],
                          index=["Male","Female","Other"].index(cd("sex")), key="w_sex"); set_cd("sex", v)
     with c3:
-        v = st.selectbox("Location", ["ER","IPD","OPD"],
-                         index=["ER","IPD","OPD"].index(cd("location")), key="w_loc"); set_cd("location", v)
+        v = st.selectbox("Location", ["ED","IPD"],
+                         index=["ED","IPD"].index(cd("location")), key="w_loc"); set_cd("location", v)
         v = st.text_input("Resident / Fellow / MO", value=cd("resident"), key="w_res"); set_cd("resident", v)
         v = st.text_input("Consultant Name", value=cd("consultant"), key="w_con"); set_cd("consultant", v)
 
@@ -836,7 +870,7 @@ elif st.session_state.ui["screen"] == "Phase 1: ER Code Activation (Duty Dr)":
     with c4:
         v = st.date_input("Presentation Date", value=cd("pres_date"), key="w_pdate"); set_cd("pres_date", v)
     with c5:
-        v = st.time_input("Presentation Time", value=cd("pres_time"), key="w_ptime"); set_cd("pres_time", v)
+        v = st.time_input("Presentation Time", value=cd("pres_time"), key="w_ptime", step=60); set_cd("pres_time", v)
 
     v = st.checkbox("🚨 Sudden onset focal neurological deficit and/or altered mental status",
                     value=cd("sudden_onset"), key="w_sudden")
@@ -976,18 +1010,23 @@ elif st.session_state.ui["screen"] == "Phase 2: Acute Neuro Eval (Responder)":
 elif st.session_state.ui["screen"] == "Phase 3: Imaging & Routing Gate":
     page_header("S3: Time & Imaging Gate", "Diagnostics, CIs & Routing")
 
-    banner("1. Last Known Well & Time Window", "blue", "🕒")
+    banner("1. Last Known Well & Live Time Window", "blue", "🕒")
     c1, c2 = st.columns(2)
     with c1:
         v = st.date_input("Date LKW", value=cd("lkw_date"), key="w_lkwd"); set_cd("lkw_date", v)
     with c2:
-        v = st.time_input("Time LKW", value=cd("lkw_time"), key="w_lkwt"); set_cd("lkw_time", v)
+        # Added step=60 for exact minute typing
+        v = st.time_input("Time LKW", value=cd("lkw_time"), key="w_lkwt", step=60); set_cd("lkw_time", v)
 
     lkw_dt = datetime.datetime.combine(cd("lkw_date"), cd("lkw_time"))
-    now_dt  = datetime.datetime.combine(cd("pres_date"), cd("pres_time"))
-    hours   = max((now_dt - lkw_dt).total_seconds() / 3600, 0.0)
+    
+    # 🔴 FIX 1: LKW is now calculated against LIVE system time
+    live_now_dt = datetime.datetime.now()
+    hours   = max((live_now_dt - lkw_dt).total_seconds() / 3600, 0.0)
     set_cd("time_since_lkw_hrs", hours)
-    st.markdown(f'<div class="kpi-grid">{kpi(f"{hours:.1f}h", "Time Since LKW", "primary" if hours <= 4.5 else "warning" if hours <= 24 else "danger")}</div>', unsafe_allow_html=True)
+    
+    st.markdown(f"**Current System Time:** `{live_now_dt.strftime('%Y-%m-%d %H:%M')}`")
+    st.markdown(f'<div class="kpi-grid">{kpi(f"{hours:.1f}h", "Live Time Since LKW", "primary" if hours <= 4.5 else "warning" if hours <= 24 else "danger")}</div>', unsafe_allow_html=True)
 
     if hours > 24:
         set_cd("assigned_pathway", "Non-Thrombolysis Pathway (> 24h)")
@@ -1008,8 +1047,6 @@ elif st.session_state.ui["screen"] == "Phase 3: Imaging & Routing Gate":
     with c3:
         opts_ct = ["Pending", "Normal / No Hemorrhage", "Extensive Hypodensity (> 1/3 MCA territory)", "Intracranial Hemorrhage (ICH)"]
         v = st.radio("NCCT Brain Finding:", opts_ct, index=opts_ct.index(cd("ct_result")), key="w_ct"); set_cd("ct_result", v)
-        if v == "Intracranial Hemorrhage (ICH)": set_cd("abs_ci_1", True)
-        elif v == "Extensive Hypodensity (> 1/3 MCA territory)": set_cd("abs_ci_2", True)
         
         if v == "Normal / No Hemorrhage":
             v_asp = st.number_input("ASPECTS Score (0–10)", min_value=0, max_value=10, value=cd("ncct_aspects"), key="w_aspects"); set_cd("ncct_aspects", v_asp)
@@ -1027,18 +1064,77 @@ elif st.session_state.ui["screen"] == "Phase 3: Imaging & Routing Gate":
                 v_mm = st.radio("Mismatch Criteria:", m_opts, index=m_opts.index(cd("mismatch_status")) if cd("mismatch_status") in m_opts else 0, key="w_mm"); set_cd("mismatch_status", v_mm)
 
     st.markdown("---")
-    with st.expander("☑️ Step 3: Contraindications & Final Routing", expanded=True):
-        st.markdown("*(Review Absolute/Relative CIs in formal protocol. Document below if excluded)*")
-        v_ref = st.checkbox("Patient / next-of-kin refused IVT/EVT", value=cd("treatment_refused"), key="w_ref"); set_cd("treatment_refused", v_ref)
-        v_not = st.checkbox("Treatment contraindicated clinically", value=cd("treatment_not_indicated"), key="w_notind"); set_cd("treatment_not_indicated", v_not)
+    
+    # 🔴 FIX 2: Comprehensive Contraindications Checklist & Logic Gate
+    with st.expander("☑️ Step 3: IVT Contraindications Checklist", expanded=True):
+        st.markdown("##### 🛑 Absolute Contraindications (NO IVT)")
         
+        # Link CT results to automatically trigger absolute contraindications
+        is_ct_ich = (cd("ct_result") == "Intracranial Hemorrhage (ICH)")
+        is_ct_hypo = (cd("ct_result") == "Extensive Hypodensity (> 1/3 MCA territory)")
+        
+        ci_abs_list = [
+            ("abs_ci_1", "Acute ICH on imaging", is_ct_ich),
+            ("abs_ci_2", "Extensive Hypodensity > 1/3 MCA territory", is_ct_hypo),
+            ("abs_ci_3", "Severe coagulopathy (Plts <100k, INR >1.7, aPTT >40s, PT >15s)", False),
+            ("abs_ci_4", "Infective endocarditis (Suspected or confirmed)", False),
+            ("abs_ci_5", "Aortic arch dissection", False),
+            ("abs_ci_6", "Intra-axial neoplasm", False),
+            ("abs_ci_7", "Recent Neurosurgery or Mod/Severe TBI (< 14 days)", False),
+            ("abs_ci_8", "Acute spinal cord injury (< 3 months)", False),
+            ("abs_ci_9", "Amyloid-related conditions / ARIA", False),
+        ]
+        
+        has_absolute_ci = False
+        for key, label, is_forced in ci_abs_list:
+            current_val = cd(key) or is_forced
+            if is_forced: set_cd(key, True)
+            
+            val = st.checkbox(label + (" (Auto-selected from CT)" if is_forced else ""), 
+                              value=current_val, key=f"chk_{key}", disabled=is_forced)
+            set_cd(key, val)
+            if val: has_absolute_ci = True
+
+        st.markdown("##### ⚠️ Relative Contraindications (Consultant Decision)")
+        ci_rel_list = [
+            ("rel_ci_1", "Recent DOAC (<48 h)"),
+            ("rel_ci_2", "Prior Ischemic Stroke (<3 months)"),
+            ("rel_ci_3", "Prior Spontaneous ICH"),
+            ("rel_ci_4", "Pre-existing disability / Frailty"),
+            ("rel_ci_5", "Pregnancy / Post-partum"),
+            ("rel_ci_6", "Recent STEMI (<3 months) or Acute pericarditis"),
+            ("rel_ci_7", "Recent GI/GU bleeding (<21 days)"),
+            ("rel_ci_8", "Major non-CNS surgery/trauma (<14 days)"),
+        ]
+        for key, label in ci_rel_list:
+            val = st.checkbox(label, value=cd(key), key=f"chk_{key}")
+            set_cd(key, val)
+
+        st.markdown("---")
+        v_ref = st.checkbox("Patient / next-of-kin refused IVT/EVT", value=cd("treatment_refused"), key="w_ref"); set_cd("treatment_refused", v_ref)
+        
+        if has_absolute_ci:
+            card("🚨 **ABSOLUTE CONTRAINDICATION MET:** Intravenous Thrombolysis (IVT) is strictly contraindicated and locked.", "danger")
+
+    with st.expander("☑️ Step 4: Final Routing Decision", expanded=True):
         options = ["Pending", "Section 1 — IV Thrombolysis (IVT)", "Section 1 — IVT + EVT", "Section 2 — Non-Thrombolysis", "Section 3 — EVT Only (no IVT)"]
+        
+        # 🔴 FIX 3: Remove IVT options from the dropdown if an Absolute CI is checked
+        available_options = options.copy()
+        if has_absolute_ci or v_ref:
+            if "Section 1 — IV Thrombolysis (IVT)" in available_options: available_options.remove("Section 1 — IV Thrombolysis (IVT)")
+            if "Section 1 — IVT + EVT" in available_options: available_options.remove("Section 1 — IVT + EVT")
+            
         cur = cd("final_routing")
-        v_route = st.radio("Select Execution Pathway:", options, index=options.index(cur) if cur in options else 0, key="w_route")
+        if cur not in available_options: cur = "Pending"
+            
+        v_route = st.radio("Select Execution Pathway:", available_options, index=available_options.index(cur), key="w_route")
         set_cd("final_routing", v_route)
 
         if "IVT" in v_route:
-            wt = st.number_input("Patient Weight (kg):", value=cd("pt_weight"), key="w_wt"); set_cd("pt_weight", wt)
+            # Added min/max values to prevent dangerous dose calculation errors
+            wt = st.number_input("Patient Weight (kg):", min_value=30.0, max_value=250.0, value=float(cd("pt_weight")), step=1.0, key="w_wt")
+            set_cd("pt_weight", wt)
             dose, _ = calc_tpa_dose(wt)
             card(f'💊 <b>Tenecteplase: {dose} mg IV bolus</b> (Max 25 mg)', "success")
             t_val = st.time_input("Time of IVT:", value=cd("tpa_time"), key="w_tpatime"); set_cd("tpa_time", t_val)
@@ -1053,13 +1149,13 @@ elif st.session_state.ui["screen"] == "Phase 3: Imaging & Routing Gate":
             else:
                 card("🧲 <b>EVT CANDIDATE:</b> Call Interventional Radiology and obtain consent immediately.", "info")
 
-        c_prev, c_next = st.columns(2)
-        with c_prev:
-            if st.button("⬅️ Back to Phase 2", use_container_width=True): go_to("Phase 2: Acute Neuro Eval (Responder)")
-        with c_next:
-            if st.button("💾 Save & Transfer to Stroke Unit ➡️", key="btn_s3_route", use_container_width=True):
-                set_cd("routing_done", True)
-                go_to("Phase 4: Stroke Unit Orders (Days 1-3)")
+    c_prev, c_next = st.columns(2)
+    with c_prev:
+        if st.button("⬅️ Back to Phase 2", use_container_width=True): go_to("Phase 2: Acute Neuro Eval (Responder)")
+    with c_next:
+        if st.button("💾 Save & Transfer to Stroke Unit ➡️", key="btn_s3_route", use_container_width=True):
+            set_cd("routing_done", True)
+            go_to("Phase 4: Stroke Unit Orders (Days 1-3)")
 
 # ── SCREEN: S4 — UNIFIED ORDERS WORKSPACE ───────────────────────────────
 elif st.session_state.ui["screen"] == "Phase 4: Stroke Unit Orders (Days 1-3)":
@@ -1102,8 +1198,8 @@ elif st.session_state.ui["screen"] == "Phase 4: Stroke Unit Orders (Days 1-3)":
                     card("🔴 BP Target post-IVT: TREAT ONLY if BP ≥ 180/105 mmHg", "danger")
                     v = st.checkbox("Labetalol, 5-20 mg IV bolus q 15 min or 2 mg/min infusion (max 300 mg/day) AND/OR Hydralazine, 5-20 mg IV push q 30 min. Treat only if BP ≥ 180/105", value=od(f"{sec}_d1_p1"), key="phys_d1_p1", disabled=not can_write("physician")); set_od(f"{sec}_d1_p1", v)
                 elif is_non:
-                    card("🩺 BP Target (Non-TPA): Permissive hypertension. Treat only if BP ≥ 220/120 mmHg.", "warning")
-                    v = st.checkbox("Labetalol / Hydralazine (Same doses as above). Treat only if BP ≥ 220/120", value=od(f"{sec}_d1_p1"), key="phys_d1_p1", disabled=not can_write("physician")); set_od(f"{sec}_d1_p1", v)
+                    card("🩺 BP Target (Non-TPA): Permissive hypertension. Treat ONLY if BP is ≥ 220/120 mmHg.", "warning")
+                    v = st.checkbox("Labetalol, 5-20 mg IV bolus q 15 min or 2 mg/min infusion AND/OR Hydralazine, 5-20 mg IV push q 30 min. Treat ONLY if BP is ≥ 220/120 mmHg", value=od(f"{sec}_d1_p1"), key="phys_d1_p1", disabled=not can_write("physician")); set_od(f"{sec}_d1_p1", v)
                 else: # EVT Only
                     card("🟠 BP Target post-EVT: TREAT ONLY if BP > 180/105 mmHg.", "warning")
                     v = st.checkbox("Labetalol / Hydralazine (Same doses as above). Treat only if BP > 180/105", value=od(f"{sec}_d1_p1"), key="phys_d1_p1", disabled=not can_write("physician")); set_od(f"{sec}_d1_p1", v)
@@ -1303,174 +1399,234 @@ elif st.session_state.ui["screen"] == "Phase 6: Serial NIHSS & Outcomes":
 
 # ── SCREEN: S9 — PROGRESS NOTES ──────────────────────────────────────────
 elif st.session_state.ui["screen"] == "Phase 5: Daily Rounds & Progress Notes":
-    page_header("S9: Clinical Progress Notes", "SOAP Format — 3-Day Booklet")
-    card("Progress notes follow the Shifa Stroke Daily Progress Note structure "
-         "(Days 1–3 per the FM booklet).", "info")
-
-    banner("Smart Progress Note Generator", "purple", "✨")
-    if st.button("🤖 Auto-Draft SOAP Note from Clinical Data", key="btn_draft"):
-        draft = generate_soap_note()
-        st.session_state["_soap_draft"] = draft
-
-    if "_soap_draft" in st.session_state:
-        card("⚠️ <b>Auto-draft for physician review — edit before signing.</b>", "warning")
-        st.text_area("Draft Note (editable):", value=st.session_state["_soap_draft"],
-                     height=300, key="draft_edit")
-
-    st.markdown("---")
-
-    with st.expander("➕ Add New Progress Note", expanded=False):
-        day_num = st.selectbox("Day of Note:", ["1","2","3"], key="pn_day_select")
-        c1, c2, c3 = st.columns(3)
-        with c1: pn_date    = st.date_input("Date:", value=datetime.date.today(), key="pn_date")
-        with c2: pn_time    = st.time_input("Time:", value=datetime.datetime.now().time(), key="pn_time")
-        with c3: pn_author = st.text_input("Author (Name & ID):", value=cd("resident") or "", key="pn_auth")
-
-        st.subheader(f"Day {day_num} Progress Note")
-        banner("Vitals & Clinical Details", "teal", "🩺")
-        c1, c2, c3 = st.columns(3)
-        with c1:
-            pn_bp   = st.text_input("BP (mmHg):",  key="pn_bp2")
-            pn_hr   = st.text_input("HR (/min):",   key="pn_hr2")
-            pn_rr   = st.text_input("RR (/min):",   key="pn_rr2")
-        with c2:
-            pn_temp = st.text_input("TMax:",        key="pn_temp2")
-            pn_spo2 = st.text_input("SpO₂:",        key="pn_spo22")
-            pn_bsr  = st.text_input("BSR (mg/dL):", key="pn_bsr2")
-        with c3:
-            pn_gcs_e = st.text_input("GCS E:", key="pn_gcse2")
-            pn_gcs_m = st.text_input("GCS M:", key="pn_gcsm2")
-            pn_gcs_v = st.text_input("GCS V:", key="pn_gcsv2")
-
-        opts_sp = ["Normal", "Mild Dysarthria", "Severe Dysarthria", "Aphasia", "Mute", "Intubated", "Other (See Remarks)"]
-        opts_pup = ["Equal & Reactive", "Unequal", "Sluggish", "Fixed/Dilated", "Other (See Remarks)"]
-        opts_eom = ["Normal", "Partial Gaze Palsy", "Forced Deviation", "Other (See Remarks)"]
-        opts_vis = ["Normal", "Partial Hemianopia", "Complete Hemianopia", "Bilateral Blindness", "Other (See Remarks)"]
-        opts_face = ["Symmetric", "Minor Paralysis", "Partial/Complete Paralysis", "Other (See Remarks)"]
-        opts_pow = ["5/5 Normal", "4/5 Mild Weak", "3/5 Anti-Gravity", "2/5 Not Anti-Gravity", "1/5 Flicker", "0/5 None", "Other"]
-        opts_tone = ["Normal", "Flaccid/Hypotonic", "Spastic/Hypertonic", "Rigidity", "Other"]
-        opts_sens = ["Normal", "Right-sided Loss", "Left-sided Loss", "Bilateral Loss", "Other (See Remarks)"]
-        opts_cer = ["Absent", "Present Right", "Present Left", "Present Bilateral", "Other (See Remarks)"]
-        opts_ref = ["Normal (2+)", "Brisk (3+)", "Depressed (1+)", "Absent (0)", "Other"]
-        opts_pla = ["Flexor (Downward)", "Extensor (Upgoing)", "Equivocal", "Mute", "Other"]
-
-        banner("Detailed Examination", "teal", "🔍")
-        e1, e2, e3 = st.columns(3)
-        with e1:
-            st.markdown("**Cranial Nerves / Head**")
-            pn_speech = st.selectbox("Speech:", opts_sp, key="pn_sp")
-            pn_pupils = st.selectbox("Pupils:", opts_pup, key="pn_pup")
-            pn_eom    = st.selectbox("EOM / Gaze:", opts_eom, key="pn_eom")
-            pn_visual = st.selectbox("Visual Fields:", opts_vis, key="pn_vis")
-            pn_face   = st.selectbox("Face / Tongue:", opts_face, key="pn_fac")
-            pn_bruit  = st.text_input("Carotid Bruit (Text):", key="pn_bruit")
-        with e2:
-            st.markdown("**Motor & Tone**")
-            p1, p2 = st.columns(2)
-            with p1:
-                pn_pow_ra = st.selectbox("Right Arm:", opts_pow, key="pn_pow_ra")
-                pn_pow_rl = st.selectbox("Right Leg:", opts_pow, key="pn_pow_rl")
-                pn_tone_r = st.selectbox("Right Tone:", opts_tone, key="pn_tone_r")
-            with p2:
-                pn_pow_la = st.selectbox("Left Arm:", opts_pow, key="pn_pow_la")
-                pn_pow_ll = st.selectbox("Left Leg:", opts_pow, key="pn_pow_ll")
-                pn_tone_l = st.selectbox("Left Tone:", opts_tone, key="pn_tone_l")
-        with e3:
-            st.markdown("**Reflexes & Plantars**")
-            r1, r2 = st.columns(2)
+    page_header("S9: Clinical Progress Notes", "Face Sheet & 3-Day Booklet")
+    
+    # Created tabs to separate the Face Sheet from the Daily Notes
+    tab_facesheet, tab_notes = st.tabs(["📋 1. Booklet Face Sheet (Admission)", "📝 2. Daily Progress Notes"])
+    
+    with tab_facesheet:
+        # ⚡ SPEED FIX: Wrapped Face Sheet in a form for fast typing!
+        with st.form("facesheet_form", clear_on_submit=False):
+            banner("Stroke Daily Progress Notes — Cover Page", "blue", "📄")
+            c1, c2, c3 = st.columns(3)
+            with c1:
+                v = st.text_input("Day of admission:", value=cd("fs_doa",""), key="fs_doa"); set_cd("fs_doa", v)
+                v = st.text_input("Day of stroke:", value=cd("fs_dos",""), key="fs_dos"); set_cd("fs_dos", v)
+            with c2:
+                v = st.text_input("Diagnosis:", value=cd("fs_dx",""), key="fs_dx"); set_cd("fs_dx", v)
+                v = st.text_input("Other Diagnoses:", value=cd("fs_odx",""), key="fs_odx"); set_cd("fs_odx", v)
+            with c3:
+                v = st.text_input("ICH Score (For intracranial bleed):", value=cd("fs_ich",""), key="fs_ich"); set_cd("fs_ich", v)
+                v = st.text_input("ABCD2 Score (For TIA):", value=cd("fs_abcd2",""), key="fs_abcd2"); set_cd("fs_abcd2", v)
+            
+            banner("Risk Factors & Secondary Prevention Workup", "teal", "🛡️")
+            
+            # Risk factors grid
+            r1, r2, r3 = st.columns([1, 1, 1.5])
             with r1:
-                pn_ref_r = st.selectbox("Right Reflex:", opts_ref, key="pn_ref_r")
-                pn_pla_r = st.selectbox("Right Plantar:", opts_pla, key="pn_pla_r")
+                st.markdown("**Risk Factor**")
+                v1 = st.checkbox("Previous Stroke(s)", value=cd("rf_prev_stroke", False), key="fs_rf1"); set_cd("rf_prev_stroke", v1)
+                v2 = st.checkbox("Diabetes Mellitus", value=cd("rf_dm", False), key="fs_rf2"); set_cd("rf_dm", v2)
+                v3 = st.checkbox("Hypertension", value=cd("rf_htn", False), key="fs_rf3"); set_cd("rf_htn", v3)
+                v4 = st.checkbox("Ischemic Heart Disease", value=cd("rf_ihd", False), key="fs_rf4"); set_cd("rf_ihd", v4)
+                v5 = st.checkbox("Smoking / Tobacco", value=cd("rf_smoking", False), key="fs_rf5"); set_cd("rf_smoking", v5)
             with r2:
-                pn_ref_l = st.selectbox("Left Reflex:", opts_ref, key="pn_ref_l")
-                pn_pla_l = st.selectbox("Left Plantar:", opts_pla, key="pn_pla_l")
-            pn_sens  = st.selectbox("Sensations:", opts_sens, key="pn_sens")
-            pn_cereb = st.selectbox("Cerebellar / Ataxia:", opts_cer, key="pn_cer")
+                st.markdown("**Onset Details**")
+                st.markdown("<br>", unsafe_allow_html=True)
+                v_dm_o = st.text_input("Onset (DM):", value=cd("fs_dm_o",""), key="fs_dm_o", label_visibility="collapsed"); set_cd("fs_dm_o", v_dm_o)
+                v_htn_o = st.text_input("Onset (HTN):", value=cd("fs_htn_o",""), key="fs_htn_o", label_visibility="collapsed"); set_cd("fs_htn_o", v_htn_o)
+            with r3:
+                st.markdown("**Values**")
+                st.markdown("<br>", unsafe_allow_html=True)
+                v_hba1c = st.text_input("HbA1c:", value=cd("fs_hba1c",""), key="fs_hba1c", label_visibility="collapsed"); set_cd("fs_hba1c", v_hba1c)
+                
+            st.markdown("---")
+            st.markdown("**Lab & Imaging Details**")
+            c_l1, c_l2 = st.columns(2)
+            with c_l1:
+                v = st.text_input("Lipid Profile (LDL, HDL, TG, Total):", value=cd("fs_lipids",""), key="fs_lipids"); set_cd("fs_lipids", v)
+                v = st.text_input("Echocardiography (EF%, Clot, etc):", value=cd("fs_echo",""), key="fs_echo"); set_cd("fs_echo", v)
+                v = st.text_input("Carotid Doppler:", value=cd("fs_carotid",""), key="fs_carotid"); set_cd("fs_carotid", v)
+            with c_l2:
+                v = st.text_input("CTA Carotids/Brain:", value=cd("fs_cta",""), key="fs_cta"); set_cd("fs_cta", v)
+                v = st.text_input("Holter Monitoring:", value=cd("fs_holter",""), key="fs_holter"); set_cd("fs_holter", v)
+                v = st.text_input("Other work up (e.g., TSH) / Young Stroke:", value=cd("fs_other",""), key="fs_other"); set_cd("fs_other", v)
 
-        st.markdown("**Systemic & Remarks**")
-        sys1, sys2 = st.columns([1, 2])
-        with sys1:
-            pn_nihss = st.text_input("Current NIHSS:", key="pn_nih")
-            pn_cvs_resp = st.text_input("CVS/Resp:", key="pn_cvs_resp")
-        with sys2:
-            pn_remarks = st.text_area("Remarks / Free Text (Required if 'Other' selected):", height=68, key="pn_remarks")
+            # Added a dedicated Save Button for the Face Sheet!
+            if st.form_submit_button("💾 Save Face Sheet"):
+                st.toast("Face Sheet data saved successfully!", icon="✅")
+    with tab_notes:
+        card("Progress notes follow the Shifa Stroke Daily Progress Note structure (Days 1–3 per the FM booklet).", "info")
 
-        banner("Investigations / Labs", "blue", "🧪")
-        l1, l2, l3, l4 = st.columns(4)
-        with l1:
-            pn_wbc = st.text_input("WBC:", key="pn_wbc")
-            pn_hb  = st.text_input("Hb:", key="pn_hb")
-        with l2:
-            pn_plts = st.text_input("Plts:", key="pn_plt")
-            pn_crp  = st.text_input("CRP:", key="pn_crp")
-        with l3:
-            pn_lfts = st.text_input("LFTs:", key="pn_lft")
-            pn_pt   = st.text_input("PT/INR:", key="pn_pt")
-        with l4:
-            pn_na   = st.text_input("Na / Cr:", key="pn_nacr")
-            pn_cult = st.text_input("Cultures:", key="pn_cult")
+        banner("Smart Progress Note Generator", "purple", "✨")
+        if st.button("🤖 Auto-Draft SOAP Note from Clinical Data", key="btn_draft"):
+            draft = generate_soap_note()
+            st.session_state["_soap_draft"] = draft
 
-        banner("Nursing Monitoring", "teal", "💉")
-        c1, c2 = st.columns(2)
-        with c1:
-            pn_bedsore = st.text_input("Bed Sore:", key="pn_bs2")
-            pn_bowel   = st.text_input("Bowel Movement:", key="pn_bm2")
-            pn_swallow = st.text_input("Swallowing:", key="pn_sw2")
-            pn_cath    = st.text_input("Urinary Cath:", key="pn_cath2")
-            pn_cell    = st.text_input("Cellulitis:", key="pn_cell")
-        with c2:
-            pn_io  = st.text_input("Input/Output:", key="pn_io2")
-            pn_oob = st.text_input("Out of Bed:", key="pn_oob2")
-            pn_asp = st.text_input("Aspiration:", key="pn_asp2")
-            pn_dvt = st.text_input("DVT:", key="pn_dvt2")
+        if "_soap_draft" in st.session_state:
+            card("⚠️ <b>Auto-draft for physician review — edit before signing.</b>", "warning")
+            st.text_area("Draft Note (editable):", value=st.session_state["_soap_draft"],
+                         height=300, key="draft_edit")
 
-        banner("Assessment, Plan & Rehab", "purple", "📋")
-        pn_assess = st.text_area("Resident Assessment:", key="pn_assess2", height=80)
-        pn_plan   = st.text_area("Plan:", key="pn_plan2", height=80)
-        pn_attending = st.text_area("Consultant / Attending Note (Rounds):", key="pn_attending", height=60)
+        st.markdown("---")
 
-        banner("Rehabilitation", "green", "🦽")
-        c_r1, c_r2, c_r3 = st.columns(3)
-        with c_r1: pn_pt = st.text_area("Physical Therapy Plan:", key="pn_pt2", height=60)
-        with c_r2: pn_st = st.text_area("Speech Therapy Plan:", key="pn_st2", height=60)
-        with c_r3: pn_ot = st.text_area("Occupational Therapy Plan:", key="pn_ot2", height=60)
-        pn_dc_days = st.text_input("Discharge expected in (days):", key="pn_dcdays2")
+        with st.expander("➕ Add New Progress Note", expanded=False):
+            # ⚡ SPEED FIX: This is the missing line that makes it lightning fast!
+            with st.form("new_progress_note_form", clear_on_submit=True):
+                day_num = st.selectbox("Day of Note:", ["1","2","3"], key="pn_day_select")
+                c1, c2, c3 = st.columns(3)
+                with c1: pn_date    = st.date_input("Date:", value=datetime.date.today(), key="pn_date")
+                with c2: pn_time    = st.time_input("Time:", value=datetime.datetime.now().time(), key="pn_time")
+                with c3: pn_author = st.text_input("Author (Name & ID):", value=cd("resident") or "", key="pn_auth")
 
-        if st.button("💾 Save Progress Note", key="btn_savenote"):
-            if not pn_author.strip():
-                card("Author name is required.", "danger")
-            else:
-                note = {
-                    "date": str(pn_date), "time": str(pn_time), "author": pn_author, "day": day_num,
-                    "vitals": f"BP {pn_bp} | HR {pn_hr} | RR {pn_rr} | TMax {pn_temp} | SpO₂ {pn_spo2} | BSR {pn_bsr}",
-                    "gcs": f"E{pn_gcs_e} M{pn_gcs_m} V{pn_gcs_v}",
-                    "exam": f"Speech: {pn_speech} | Power(R/L): Arms {pn_pow_ra}/{pn_pow_la}, Legs {pn_pow_rl}/{pn_pow_ll} | Tone(R/L): {pn_tone_r}/{pn_tone_l} | Plantars(R/L): {pn_pla_r}/{pn_pla_l} | Reflexes(R/L): {pn_ref_r}/{pn_ref_l} | Sens: {pn_sens} | Cereb: {pn_cereb} | NIHSS: {pn_nihss}",
-                    "systemic": f"CVS/Resp: {pn_cvs_resp} | Remarks: {pn_remarks}",
-                    "nursing": f"Bedsore: {pn_bedsore} | Bowel: {pn_bowel} | Swallow: {pn_swallow} | Cath: {pn_cath} | Cellulitis: {pn_cell} | IO: {pn_io} | OOB: {pn_oob} | Aspiration: {pn_asp} | DVT: {pn_dvt}",
-                    "assessment": f"Resident: {pn_assess} | Attending: {pn_attending}",
-                    "plan": pn_plan,
-                    "rehab": f"PT: {pn_pt}\nST: {pn_st}\nOT: {pn_ot}",
-                    "dc_days": pn_dc_days, "role": current_role(),
-                }
-                st.session_state.progress_notes.append(note)
-                card("✅ Progress note saved.", "success")
-                st.rerun()
+                st.subheader(f"Day {day_num} Progress Note")
+                banner("Vitals & Clinical Details", "teal", "🩺")
+                c1, c2, c3 = st.columns(3)
+                with c1:
+                    pn_bp   = st.text_input("BP (mmHg):",  key="pn_bp2")
+                    pn_hr   = st.text_input("HR (/min):",   key="pn_hr2")
+                    pn_rr   = st.text_input("RR (/min):",   key="pn_rr2")
+                with c2:
+                    pn_temp = st.text_input("TMax:",        key="pn_temp2")
+                    pn_spo2 = st.text_input("SpO₂:",        key="pn_spo22")
+                    pn_bsr  = st.text_input("BSR (mg/dL):", key="pn_bsr2")
+                with c3:
+                    pn_gcs_e = st.text_input("GCS E:", key="pn_gcse2")
+                    pn_gcs_m = st.text_input("GCS M:", key="pn_gcsm2")
+                    pn_gcs_v = st.text_input("GCS V:", key="pn_gcsv2")
 
-    st.markdown("---")
-    st.subheader(f"📝 Saved Progress Notes ({len(st.session_state.progress_notes)})")
-    for i, note in enumerate(reversed(st.session_state.progress_notes)):
-        with st.expander(f"Day {note['day']} — {note['date']} {note['time']} | {note['author']}"):
-            st.markdown(f"**Vitals:** {note['vitals']}")
-            st.markdown(f"**GCS:** {note['gcs']}")
-            st.markdown(f"**Exam:** {note['exam']}")
-            st.markdown(f"**Systemic:** {note['systemic']}")
-            st.markdown(f"**Nursing:** {note['nursing']}")
-            st.markdown(f"**Assessment:** {note['assessment']}")
-            st.markdown(f"**Plan:** {note['plan']}")
-            st.markdown(f"**Rehab:** {note['rehab']}")
-            if note.get("dc_days"):
-                st.markdown(f"**Discharge in:** {note['dc_days']} days")
-            st.caption(f"Entered by: {note['role']} — {note['author']}")
+                opts_sp = ["Normal", "Mild Dysarthria", "Severe Dysarthria", "Aphasia", "Mute", "Intubated", "Other (See Remarks)"]
+                opts_pup = ["Equal & Reactive", "Unequal", "Sluggish", "Fixed/Dilated", "Other (See Remarks)"]
+                opts_eom = ["Normal", "Partial Gaze Palsy", "Forced Deviation", "Other (See Remarks)"]
+                opts_vis = ["Normal", "Partial Hemianopia", "Complete Hemianopia", "Bilateral Blindness", "Other (See Remarks)"]
+                opts_face = ["Symmetric", "Minor Paralysis", "Partial/Complete Paralysis", "Other (See Remarks)"]
+                opts_pow = ["5/5 Normal", "4/5 Mild Weak", "3/5 Anti-Gravity", "2/5 Not Anti-Gravity", "1/5 Flicker", "0/5 None", "Other"]
+                opts_tone = ["Normal", "Flaccid/Hypotonic", "Spastic/Hypertonic", "Rigidity", "Other"]
+                opts_sens = ["Normal", "Right-sided Loss", "Left-sided Loss", "Bilateral Loss", "Other (See Remarks)"]
+                opts_cer = ["Absent", "Present Right", "Present Left", "Present Bilateral", "Other (See Remarks)"]
+                opts_ref = ["Normal (2+)", "Brisk (3+)", "Depressed (1+)", "Absent (0)", "Other"]
+                opts_pla = ["Flexor (Downward)", "Extensor (Upgoing)", "Equivocal", "Mute", "Other"]
+
+                banner("Detailed Examination", "teal", "🔍")
+                e1, e2, e3 = st.columns(3)
+                with e1:
+                    st.markdown("**Cranial Nerves / Head**")
+                    pn_speech = st.selectbox("Speech:", opts_sp, key="pn_sp")
+                    pn_pupils = st.selectbox("Pupils:", opts_pup, key="pn_pup")
+                    pn_eom    = st.selectbox("EOM / Gaze:", opts_eom, key="pn_eom")
+                    pn_visual = st.selectbox("Visual Fields:", opts_vis, key="pn_vis")
+                    pn_face   = st.selectbox("Face / Tongue:", opts_face, key="pn_fac")
+                    pn_bruit  = st.text_input("Carotid Bruit (Text):", key="pn_bruit")
+                with e2:
+                    st.markdown("**Motor & Tone**")
+                    p1, p2 = st.columns(2)
+                    with p1:
+                        pn_pow_ra = st.selectbox("Right Arm:", opts_pow, key="pn_pow_ra")
+                        pn_pow_rl = st.selectbox("Right Leg:", opts_pow, key="pn_pow_rl")
+                        pn_tone_r = st.selectbox("Right Tone:", opts_tone, key="pn_tone_r")
+                    with p2:
+                        pn_pow_la = st.selectbox("Left Arm:", opts_pow, key="pn_pow_la")
+                        pn_pow_ll = st.selectbox("Left Leg:", opts_pow, key="pn_pow_ll")
+                        pn_tone_l = st.selectbox("Left Tone:", opts_tone, key="pn_tone_l")
+                with e3:
+                    st.markdown("**Reflexes & Plantars**")
+                    r1, r2 = st.columns(2)
+                    with r1:
+                        pn_ref_r = st.selectbox("Right Reflex:", opts_ref, key="pn_ref_r")
+                        pn_pla_r = st.selectbox("Right Plantar:", opts_pla, key="pn_pla_r")
+                    with r2:
+                        pn_ref_l = st.selectbox("Left Reflex:", opts_ref, key="pn_ref_l")
+                        pn_pla_l = st.selectbox("Left Plantar:", opts_pla, key="pn_pla_l")
+                    pn_sens  = st.selectbox("Sensations:", opts_sens, key="pn_sens")
+                    pn_cereb = st.selectbox("Cerebellar / Ataxia:", opts_cer, key="pn_cer")
+
+                st.markdown("**Systemic & Remarks**")
+                sys1, sys2 = st.columns([1, 2])
+                with sys1:
+                    pn_nihss = st.text_input("Current NIHSS:", key="pn_nih")
+                    pn_cvs_resp = st.text_input("CVS/Resp:", key="pn_cvs_resp")
+                with sys2:
+                    pn_remarks = st.text_area("Remarks / Free Text (Required if 'Other' selected):", height=68, key="pn_remarks")
+
+                banner("Investigations / Labs", "blue", "🧪")
+                l1, l2, l3, l4 = st.columns(4)
+                with l1:
+                    pn_wbc = st.text_input("WBC:", key="pn_wbc")
+                    pn_hb  = st.text_input("Hb:", key="pn_hb")
+                with l2:
+                    pn_plts = st.text_input("Plts:", key="pn_plt")
+                    pn_crp  = st.text_input("CRP:", key="pn_crp")
+                with l3:
+                    pn_lfts = st.text_input("LFTs:", key="pn_lft")
+                    pn_pt   = st.text_input("PT/INR:", key="pn_pt")
+                with l4:
+                    pn_na   = st.text_input("Na / Cr:", key="pn_nacr")
+                    pn_cult = st.text_input("Cultures:", key="pn_cult")
+
+                banner("Nursing Monitoring", "teal", "💉")
+                c1, c2 = st.columns(2)
+                with c1:
+                    pn_bedsore = st.text_input("Bed Sore:", key="pn_bs2")
+                    pn_bowel   = st.text_input("Bowel Movement:", key="pn_bm2")
+                    pn_swallow = st.text_input("Swallowing:", key="pn_sw2")
+                    pn_cath    = st.text_input("Urinary Cath:", key="pn_cath2")
+                    pn_cell    = st.text_input("Cellulitis:", key="pn_cell")
+                with c2:
+                    pn_io  = st.text_input("Input/Output:", key="pn_io2")
+                    pn_oob = st.text_input("Out of Bed:", key="pn_oob2")
+                    pn_asp = st.text_input("Aspiration:", key="pn_asp2")
+                    pn_dvt = st.text_input("DVT:", key="pn_dvt2")
+
+                banner("Assessment, Plan & Rehab", "purple", "📋")
+                pn_assess = st.text_area("Resident Assessment:", key="pn_assess2", height=80)
+                pn_plan   = st.text_area("Plan:", key="pn_plan2", height=80)
+                pn_attending = st.text_area("Consultant / Attending Note (Rounds):", key="pn_attending", height=60)
+
+                banner("Rehabilitation", "green", "🦽")
+                c_r1, c_r2, c_r3 = st.columns(3)
+                with c_r1: pn_pt = st.text_area("Physical Therapy Plan:", key="pn_pt2", height=60)
+                with c_r2: pn_st = st.text_area("Speech Therapy Plan:", key="pn_st2", height=60)
+                with c_r3: pn_ot = st.text_area("Occupational Therapy Plan:", key="pn_ot2", height=60)
+                pn_dc_days = st.text_input("Discharge expected in (days):", key="pn_dcdays2")
+
+                # The button is now a SINGLE form_submit_button!
+                if st.form_submit_button("💾 Save Progress Note"):
+                    if not pn_author.strip():
+                        st.error("Author name is required.")
+                    else:
+                        note = {
+                            "date": str(pn_date), "time": str(pn_time), "author": pn_author, "day": day_num,
+                            "vitals": f"BP {pn_bp} | HR {pn_hr} | RR {pn_rr} | TMax {pn_temp} | SpO₂ {pn_spo2} | BSR {pn_bsr}",
+                            "gcs": f"E{pn_gcs_e} M{pn_gcs_m} V{pn_gcs_v}",
+                            "exam": f"Speech: {pn_speech} | Power(R/L): Arms {pn_pow_ra}/{pn_pow_la}, Legs {pn_pow_rl}/{pn_pow_ll} | Tone(R/L): {pn_tone_r}/{pn_tone_l} | Plantars(R/L): {pn_pla_r}/{pn_pla_l} | Reflexes(R/L): {pn_ref_r}/{pn_ref_l} | Sens: {pn_sens} | Cereb: {pn_cereb} | NIHSS: {pn_nihss}",
+                            "systemic": f"CVS/Resp: {pn_cvs_resp} | Remarks: {pn_remarks}",
+                            "nursing": f"Bedsore: {pn_bedsore} | Bowel: {pn_bowel} | Swallow: {pn_swallow} | Cath: {pn_cath} | Cellulitis: {pn_cell} | IO: {pn_io} | OOB: {pn_oob} | Aspiration: {pn_asp} | DVT: {pn_dvt}",
+                            "assessment": f"Resident: {pn_assess} | Attending: {pn_attending}",
+                            "plan": pn_plan,
+                            "rehab": f"PT: {pn_pt}\nST: {pn_st}\nOT: {pn_ot}",
+                            "dc_days": pn_dc_days, "role": current_role(),
+                        }
+                        st.session_state.progress_notes.append(note)
+                        
+                        # Added elegant toast notification
+                        st.toast("Progress note saved successfully!", icon="✅")
+                        st.rerun()
+
+        st.markdown("---")
+        st.subheader(f"📝 Saved Progress Notes ({len(st.session_state.progress_notes)})")
+        for i, note in enumerate(reversed(st.session_state.progress_notes)):
+            with st.expander(f"Day {note['day']} — {note['date']} {note['time']} | {note['author']}"):
+                st.markdown(f"**Vitals:** {note['vitals']}")
+                st.markdown(f"**GCS:** {note['gcs']}")
+                st.markdown(f"**Exam:** {note['exam']}")
+                st.markdown(f"**Systemic:** {note['systemic']}")
+                st.markdown(f"**Nursing:** {note['nursing']}")
+                st.markdown(f"**Assessment:** {note['assessment']}")
+                st.markdown(f"**Plan:** {note['plan']}")
+                st.markdown(f"**Rehab:** {note['rehab']}")
+                if note.get("dc_days"):
+                    st.markdown(f"**Discharge in:** {note['dc_days']} days")
+                st.caption(f"Entered by: {note['role']} — {note['author']}")
             
 # ── SCREEN: S10 — JCI VARIANCE AUDIT ─────────────────────────────────────
 elif st.session_state.ui["screen"] == "Variance Audit":
