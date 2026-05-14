@@ -341,6 +341,14 @@ def init_state():
         "toast_large_artery": False, "toast_other": False,
         "rf_prev_stroke": False, "rf_dm": False, "rf_htn": False,
         "rf_ihd": False, "rf_smoking": False,
+        "dragon_dense_artery": False,
+        "dragon_glucose": 100,
+        "dragon_calculated": False,
+        "sedan_early_infarct": False,
+        "sedan_calculated": False,
+        "layman_summary_generated": False,
+        "layman_text": "",
+        "fast_ed_score": 0,
     })
 
     def _cpoe_defaults():
@@ -1020,6 +1028,51 @@ elif st.session_state.ui["screen"] == "Phase 2: Acute Neuro Eval (Responder)":
                     v_ov = st.checkbox("Physician Override: Treat as disabling based on clinical judgment", value=cd("prisms_override", False), key="w_prisms_ov")
                     set_cd("prisms_override", v_ov)
             # ---------------------------------
+            # 🤖 AUTOMATED FAST-ED LVO PREDICTOR
+            # ---------------------------------
+            st.markdown("---")
+            st.markdown("##### 🚑 FAST-ED Score (LVO Predictor for CTA Decision)")
+            
+            # F: Face (NIHSS 4) -> 0 = Normal, 1-3 = Mild/Severe (1 pt)
+            f_score = 1 if get_score(cd("n4")) >= 1 else 0
+            
+            # A: Arm (NIHSS 5a/5b) -> Worst arm. 0-1 (No/Mild drift) = 0 pts | 2 (Some effort) = 1 pt | 3-4 (No effort/movement) = 2 pts
+            worst_arm = max(get_score(cd("n5l")), get_score(cd("n5r")))
+            a_score = 2 if worst_arm >= 3 else (1 if worst_arm == 2 else 0)
+            
+            # S: Speech (NIHSS 9 & 10) -> Max of Aphasia or Dysarthria. 0 = Normal | 1 = Abnormal | 2-3 = Severe/Aphasic
+            worst_speech = max(get_score(cd("n9")), get_score(cd("n10")))
+            s_score = 2 if worst_speech >= 2 else (1 if worst_speech == 1 else 0)
+            
+            # E: Eye (NIHSS 2) -> Exact 1:1 mapping (0, 1, 2)
+            e_score = get_score(cd("n2"))
+            
+            # D: Denial/Neglect (NIHSS 11) -> Exact 1:1 mapping (0, 1, 2)
+            d_score = get_score(cd("n11"))
+            
+            # Calculate Total
+            fast_ed_total = f_score + a_score + s_score + e_score + d_score
+            set_cd("fast_ed_score", fast_ed_total)
+            
+            c_f1, c_f2 = st.columns([1, 2])
+            with c_f1:
+                # Color coding based on risk tiers
+                if fast_ed_total >= 4:
+                    kpi_style = "danger"
+                elif fast_ed_total >= 2:
+                    kpi_style = "warning"
+                else:
+                    kpi_style = "success"
+                st.markdown(f'<div class="kpi-grid" style="margin-top: 0;">{kpi(str(fast_ed_total), "FAST-ED (0-9)", kpi_style)}</div>', unsafe_allow_html=True)
+                
+            with c_f2:
+                if fast_ed_total >= 4:
+                    card(f"🚨 **High probability (60-85%) of LVO.** (Score {fast_ed_total})<br><b>Recommendation:</b> CTA (CT Angiography) of Head & Neck is STRONGLY INDICATED to assess for EVT.", "danger", "🧠")
+                elif fast_ed_total >= 2:
+                    card(f"⚠️ **Moderate probability (30%) of LVO.** (Score {fast_ed_total})<br><b>Recommendation:</b> CTA remains highly recommended per clinical context to rule out proximal occlusion.", "warning", "🧠")
+                else:
+                    card(f"✅ **Lower probability (<15%) of LVO.** (Score {fast_ed_total})<br><b>Recommendation:</b> Proceed with NCCT. CTA may still be indicated per protocol, but large vessel occlusion is statistically less likely.", "success", "🧠")
+            # ---------------------------------
             
             c_prev, c_next = st.columns(2)
             with c_prev:
@@ -1208,6 +1261,59 @@ elif st.session_state.ui["screen"] == "Phase 3: Imaging & Routing Gate":
             
         v_route = st.radio("Select Execution Pathway:", options, index=options.index(cur), key="w_route")
         set_cd("final_routing", v_route)
+        # ---------------------------------------------------------
+        # SEDAN SCORE (sICH Risk Predictor)
+        # ---------------------------------------------------------
+        if "IVT" in v_route:
+            with st.expander("🩸 SEDAN Score — sICH Risk Predictor", expanded=False):
+                card("The SEDAN score assesses the risk of symptomatic Intracranial Hemorrhage (sICH) following IV Thrombolysis.", "info")
+                
+                c_s1, c_s2 = st.columns(2)
+                with c_s1:
+                    st.markdown("**Auto-Pulled Variables:**")
+                    age = (datetime.date.today() - cd("dob")).days // 365 if cd("dob") else 0
+                    st.markdown(f"• **Age:** {age} years")
+                    st.markdown(f"• **Baseline NIHSS:** {cd('nihss_baseline', 0)}")
+                    
+                with c_s2:
+                    st.markdown("**Clinical Inputs:**")
+                    v_glu_sedan = st.number_input("Baseline Glucose (mg/dL) [SEDAN]:", value=int(cd("dragon_glucose", 100)), step=10, key="sedan_glu")
+                    set_cd("dragon_glucose", v_glu_sedan) # Sync with DRAGON
+                    
+                    v_early_inf = st.checkbox("Early infarct signs on CT", value=cd("sedan_early_infarct"), key="sedan_inf")
+                    set_cd("sedan_early_infarct", v_early_inf)
+                    
+                    v_dense_sedan = st.checkbox("Hyperdense cerebral artery sign", value=cd("dragon_dense_artery"), key="sedan_dense")
+                    set_cd("dragon_dense_artery", v_dense_sedan) # Sync with DRAGON
+
+                if st.button("Calculate SEDAN Risk", key="btn_sedan"):
+                    s_score = 0
+                    # Sugar (Glucose)
+                    glu_mmol = v_glu_sedan / 18.0 # Convert to mmol/L
+                    if glu_mmol > 12.0: s_score += 2
+                    elif glu_mmol >= 8.0: s_score += 1
+                    # Early Infarct
+                    if v_early_inf: s_score += 1
+                    # Dense Artery
+                    if v_dense_sedan: s_score += 1
+                    # Age
+                    if age >= 75: s_score += 1
+                    # NIHSS
+                    if cd("nihss_baseline", 0) > 10: s_score += 1
+                    
+                    set_cd("sedan_score_final", s_score)
+                    set_cd("sedan_calculated", True)
+                    st.rerun()
+
+                if cd("sedan_calculated"):
+                    ss = cd("sedan_score_final", 0)
+                    risk_map = {0: "1.4%", 1: "2.9%", 2: "7.1%", 3: "9.8%", 4: "21.6%", 5: "33.3%"}
+                    risk_pct = risk_map.get(ss, "> 33.3%")
+                    risk_color = "danger" if ss >= 4 else ("warning" if ss >= 2 else "success")
+                    
+                    st.markdown(f'<div class="kpi-grid">{kpi(str(ss), "SEDAN Score (0-6)", "primary")}</div>', unsafe_allow_html=True)
+                    card(f"**Predicted sICH Risk:** {risk_pct}", risk_color)
+                    # ---------------------------------------------------------
 
         # 5. Render Dose Calculator ONLY if IVT is actually selected
         if "IVT" in v_route and "Non-Thrombolysis" not in v_route:
@@ -1330,6 +1436,33 @@ elif st.session_state.ui["screen"] == "Phase 4: Stroke Unit Orders (Days 1-3)":
             banner("24-Hour Vitals Grid (BP, HR, RR, GCS)", "red", "📊")
             st.session_state.monitor_grid = st.data_editor(st.session_state.monitor_grid, use_container_width=True, num_rows="fixed", key="nurse_grid")
             
+            # ---------------------------------------------------------
+            # REAL-TIME VITALS WATCHDOG (BP Anomaly Detection)
+            # ---------------------------------------------------------
+            if is_ivt:
+                bp_violations = []
+                for _, row in st.session_state.monitor_grid.iterrows():
+                    bp_str = str(row.get("BP", "")).strip()
+                    if "/" in bp_str:
+                        try:
+                            sys, dia = map(int, bp_str.split("/"))
+                            if sys > 180 or dia > 105:
+                                time_logged = row["Actual Time"] if str(row["Actual Time"]).strip() else row["Time since IVT"]
+                                bp_violations.append(f"{bp_str} at {time_logged}")
+                        except ValueError:
+                            pass
+                
+                if bp_violations:
+                    v_list = " • ".join(bp_violations)
+                    st.markdown(
+                        f"""<div style="background:#7F1D1D; color:white; padding:15px; border-radius:8px; margin-bottom:15px; border-left: 8px solid #EF4444; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        <h4 style="color:white; margin-top:0;">🚨 HIGH-RISK PROTOCOL ALERT</h4>
+                        <b>BP Target Violation ( > 180/105 ) detected post-IVT:</b> {v_list}<br><br>
+                        <i><b>Immediate Action Required:</b> Administer IV Labetalol or Hydralazine per protocol to prevent hemorrhagic transformation. Inform duty resident immediately.</i>
+                        </div>""", unsafe_allow_html=True
+                    )
+            # ---------------------------------------------------------
+
             d1, d2, d3 = st.tabs(["Day 1", "Day 2", "Day 3"])
             with d1:
                 card("🩺 Supplemental O₂ if SpO₂ < 94% | Target BSR: 140–180 mg/dL (Treat if <60)", "info")
@@ -1375,6 +1508,90 @@ elif st.session_state.ui["screen"] == "Phase 4: Stroke Unit Orders (Days 1-3)":
                 v = st.checkbox(f"Communicate 30-day mortality (NIHSS={sc}: {sev} — {mort})", value=od(f"{sec}_d1_f2"), key="a_d1_f2", disabled=not can_write("physician")); set_od(f"{sec}_d1_f2", v)
                 if is_evt:
                     v = st.checkbox("🟠 [EVT] Explain EVT procedure outcome and mTICI grade", value=od(f"{sec}_d1_f3"), key="a_d1_f3", disabled=not can_write("physician")); set_od(f"{sec}_d1_f3", v)
+
+                # ---------------------------------------------------------
+                # PASTE THE ENTIRE DRAGON SCORE INTEGRATION BLOCK HERE
+                # ---------------------------------------------------------
+                with st.expander("🐉 DRAGON Score (3-Month Prognosis) — For Family Counseling", expanded=False):
+                    card("The DRAGON score predicts the probability of a poor functional outcome (mRS 3-6) at 3 months in patients receiving IVT.", "info")
+                    
+                    # 1. Auto-calculate Age and Time to Treatment
+                    age = (datetime.date.today() - cd("dob")).days // 365 if cd("dob") else 0
+                    
+                    # Calculate Onset-to-Needle in minutes
+                    door_dt = datetime.datetime.combine(cd("pres_date"), cd("pres_time"))
+                    needle_dt = datetime.datetime.combine(cd("pres_date"), cd("tpa_time")) if cd("tpa_time") != datetime.time(0,0) else door_dt
+                    onset_dt = datetime.datetime.combine(cd("lkw_date"), cd("lkw_time"))
+                    onset_to_needle_mins = max((needle_dt - onset_dt).total_seconds() / 60, 0) if "IVT" in cd("final_routing") else 0
+
+                    c1, c2 = st.columns(2)
+                    with c1:
+                        st.markdown("**Auto-Pulled Data:**")
+                        st.markdown(f"• **Age:** {age} years")
+                        st.markdown(f"• **Baseline NIHSS:** {cd('nihss_baseline', 0)}")
+                        st.markdown(f"• **Pre-Stroke mRS:** {cd('mrs_pre', 0)}")
+                        st.markdown(f"• **Onset to Treatment:** {onset_to_needle_mins:.0f} mins")
+                    
+                    with c2:
+                        st.markdown("**Additional Inputs:**")
+                        v_dense = st.checkbox("Dense cerebral artery or early infarct signs on CT", value=cd("dragon_dense_artery"), key="drg_dense")
+                        set_cd("dragon_dense_artery", v_dense)
+                        
+                        v_glu = st.number_input("Baseline Glucose (mg/dL)", value=int(cd("dragon_glucose", 100)), step=10, key="drg_glu")
+                        set_cd("dragon_glucose", v_glu)
+
+                    # 2. Calculate the Score
+                    if st.button("Calculate DRAGON Score", key="btn_calc_dragon"):
+                        d_score = 0
+                        # Dense Artery
+                        if v_dense: d_score += 1
+                        # Rankin > 1
+                        if cd("mrs_pre", 0) > 1: d_score += 1
+                        # Age
+                        if age >= 80: d_score += 2
+                        elif age >= 65: d_score += 1
+                        # Glucose > 144
+                        if v_glu > 144: d_score += 1
+                        # Onset to Treatment > 90m
+                        if onset_to_needle_mins > 90: d_score += 1
+                        
+                        # --- FIX: FETCH NIHSS AND INDENT THE CHECKS BELOW ---
+                        nihss = cd("nihss_baseline", 0)
+                        
+                        if nihss >= 16:
+                            d_score += 3
+                        elif nihss >= 10:
+                            d_score += 2
+                        elif nihss >= 5:
+                            d_score += 1
+                        
+                        set_cd("dragon_score_final", d_score)
+                        set_cd("dragon_calculated", True)
+                        st.rerun()
+
+                    # 3. Display Results
+                    if cd("dragon_calculated"):
+                        ds = cd("dragon_score_final", 0)
+                        
+                        # Interpretation Logic
+                        if ds <= 2:
+                            prog, color = "Good (96% chance of favorable outcome)", "success"
+                        elif ds <= 4:
+                            prog, color = "Moderate (approx. 70% chance of favorable outcome)", "warning"
+                        elif ds <= 7:
+                            prog, color = "Poor (approx. 20-30% chance of favorable outcome)", "danger"
+                        else:
+                            prog, color = "Miserable (0-5% chance of favorable outcome, high mortality)", "danger"
+
+                        st.markdown(f'<div class="kpi-grid">{kpi(str(ds), "DRAGON Score (0-10)", "primary")}</div>', unsafe_allow_html=True)
+                        card(f"**Prognosis:** {prog}", color)
+                        
+                        v_counsel = st.checkbox(f"Family counseled on DRAGON prognosis ({ds}/10)", value=od("s1_d1_dragon_counsel"), key="drg_counsel", disabled=not can_write("physician"))
+                        set_od("s1_d1_dragon_counsel", v_counsel)
+                # ---------------------------------------------------------
+
+            with d2:
+                banner("F — Family Education & Lifestyle", "blue", "👨‍👩‍👧")
 
             with d2:
                 banner("F — Family Education & Lifestyle", "blue", "👨‍👩‍👧")
@@ -1541,6 +1758,25 @@ elif st.session_state.ui["screen"] == "Phase 5: Daily Rounds & Progress Notes":
         if st.button("🤖 Auto-Draft SOAP Note from Clinical Data", key="btn_draft"):
             draft = generate_soap_note()
             st.session_state["_soap_draft"] = draft
+        # ---------------------------------------------------------
+        # LAYMAN COMMUNICATION TRANSLATOR
+        # ---------------------------------------------------------
+        if st.button("🗣️ Generate Plain-English Family Summary", key="btn_layman"):
+            dx = "a clot blocking blood flow to the brain (Ischemic Stroke)" if "Hemorrhagic" not in cd("assigned_pathway") else "bleeding in the brain"
+            tx = "clot-busting medication (Thrombolysis)" if "IVT" in cd("final_routing") else "standard medical management and close monitoring"
+            tx += " and a procedure to mechanically remove the clot" if "EVT" in cd("final_routing") else ""
+            
+            sc = cd("nihss_baseline", 0)
+            sev = "mild" if sc <= 5 else "moderate" if sc <= 14 else "severe"
+            
+            layman = f"""**Family Discussion Guide for {cd("pat_name")}:**\n\n"Your family member has experienced a {sev} stroke, which means there is {dx}. Because they arrived at the hospital within the critical time window, we were able to provide {tx}.\n\nRight now, they are in the Stroke Unit for a strict 24-hour observation period where we will be checking their blood pressure and neurological signs very closely. The next 24 to 48 hours are critical for assessing their recovery trajectory." """
+            
+            set_cd("layman_text", layman)
+            set_cd("layman_summary_generated", True)
+            
+        if cd("layman_summary_generated"):
+            card(cd("layman_text"), "info", "👨‍👩‍👧")
+        # ---------------------------------------------------------
 
         if "_soap_draft" in st.session_state:
             card("⚠️ <b>Auto-draft for physician review — edit before signing.</b>", "warning")
@@ -1749,6 +1985,24 @@ elif st.session_state.ui["screen"] == "Variance Audit":
                 if st.button("✅ Mark as Resolved", key=f"resolve_{idx}"):
                     st.session_state.variance_log[idx]["resolved"] = True
                     st.rerun()
+        # ---------------------------------------------------------
+        # AI-ASSISTED ROOT CAUSE ANALYSIS (RCA)
+        # ---------------------------------------------------------
+        if can_write("admin") and vl:
+            st.markdown("### 🤖 JCI Automated RCA Assistant")
+            if st.button("Generate Trend Analysis", key="btn_rca"):
+                # Simple aggregation logic mapping items to bottlenecks
+                sections = [v["section"] for v in vl]
+                most_common_sec = max(set(sections), key=sections.count)
+                
+                rca_text = f"""
+                **Root Cause Diagnostics:**
+                • **Total Protocol Deviations Analyzed:** {total}
+                • **Primary Bottleneck Area:** `{most_common_sec}` accounts for the highest frequency of variances.
+                • **Audit Recommendation:** Review unit staffing and process workflows in the `{most_common_sec}` phase. Address open variances immediately to maintain JCI compliance and ensure target door-to-needle times are not systematically compromised.
+                """
+                st.markdown(f'<div style="background:#F8FAFC; padding:15px; border-left:5px solid #4C1D95; border-radius:5px;">{rca_text}</div>', unsafe_allow_html=True)
+        # ---------------------------------------------------------
 
         st.markdown("---")
         if can_write("admin"):
