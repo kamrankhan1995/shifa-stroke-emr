@@ -280,7 +280,7 @@ def init_state():
         "mrn": "", "pat_name": "", "sex": "Male",
         "dob": datetime.date(1970, 1, 1),
         "pres_date": datetime.date.today(),
-        "pres_time": datetime.datetime.now().time(),
+        "pres_time": (datetime.datetime.utcnow() + datetime.timedelta(hours=5)).time(),
         "location": "ED", "resident": "", "consultant": "",
         "sudden_onset": False,
         "r_loc": False, "r_seizures": False,
@@ -438,7 +438,7 @@ def kpi(value: str, label: str, style: str = "primary"):
 
 def log_variance(section: str, day: str, item: str, reason: str):
     st.session_state.variance_log.append({
-        "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "timestamp": (datetime.datetime.utcnow() + datetime.timedelta(hours=5)).strftime("%Y-%m-%d %H:%M"),
         "section": section, "day": day, "item": item, "reason": reason,
         "user": current_role(), "patient": cd("pat_name"), "mrn": cd("mrn"), "resolved": False,
     })
@@ -994,9 +994,32 @@ elif st.session_state.ui["screen"] == "Phase 2: Acute Neuro Eval (Responder)":
         nihss_form("", "Baseline Assessment", expand=True)
         if cd("nihss_calculated"):
             sc = cd("nihss_baseline")
+            
+            # --- AUTOMATED PRISMS CRITERIA ---
             if sc <= 5:
-                card("⚠️ <b>NIHSS 0–5.</b> Check PRISMS Criteria — are deficits clearly disabling?", "warning")
-                v = st.radio("PRISMS: Are deficits clearly disabling?", [True, False], index=0 if cd("prisms_disabling") else 1, key="w_prisms"); set_cd("prisms_disabling", v)
+                # Extract numeric scores from the NIHSS strings
+                n3_val  = get_score(cd("n3"))
+                n5l_val = get_score(cd("n5l"))
+                n5r_val = get_score(cd("n5r"))
+                n6l_val = get_score(cd("n6l"))
+                n6r_val = get_score(cd("n6r"))
+                n9_val  = get_score(cd("n9"))
+                n11_val = get_score(cd("n11"))
+                
+                # Logic Gate: Are deficits clearly disabling?
+                is_disabling = (n3_val >= 2 or n5l_val >= 2 or n5r_val >= 2 or 
+                                n6l_val >= 2 or n6r_val >= 2 or n9_val >= 2 or n11_val >= 2)
+                
+                set_cd("prisms_disabling", is_disabling)
+                
+                if is_disabling:
+                    card("✅ **Guideline Alert:** Deficits are considered CLEARLY DISABLING (Meets PRISMS criteria). Patient remains an IVT candidate.", "success")
+                else:
+                    card("⚠️ **Guideline Alert:** Deficits are NOT clearly disabling per AHA/ASA criteria. Consider DAPT instead of IVT.", "warning")
+                    # Provide a manual override just in case clinical judgment dictates otherwise
+                    v_ov = st.checkbox("Physician Override: Treat as disabling based on clinical judgment", value=cd("prisms_override", False), key="w_prisms_ov")
+                    set_cd("prisms_override", v_ov)
+            # ---------------------------------
             
             c_prev, c_next = st.columns(2)
             with c_prev:
@@ -1020,8 +1043,8 @@ elif st.session_state.ui["screen"] == "Phase 3: Imaging & Routing Gate":
 
     lkw_dt = datetime.datetime.combine(cd("lkw_date"), cd("lkw_time"))
     
-    # 🔴 FIX 1: LKW is now calculated against LIVE system time
-    live_now_dt = datetime.datetime.now()
+    # 🔴 FIX 1: LKW is now calculated against LIVE PKT system time (UTC + 5 hours)
+    live_now_dt = datetime.datetime.utcnow() + datetime.timedelta(hours=5)
     hours   = max((live_now_dt - lkw_dt).total_seconds() / 3600, 0.0)
     set_cd("time_since_lkw_hrs", hours)
     
@@ -1117,35 +1140,91 @@ elif st.session_state.ui["screen"] == "Phase 3: Imaging & Routing Gate":
             card("🚨 **ABSOLUTE CONTRAINDICATION MET:** Intravenous Thrombolysis (IVT) is strictly contraindicated and locked.", "danger")
 
     with st.expander("☑️ Step 4: Final Routing Decision", expanded=True):
-        options = ["Pending", "Section 1 — IV Thrombolysis (IVT)", "Section 1 — IVT + EVT", "Section 2 — Non-Thrombolysis", "Section 3 — EVT Only (no IVT)"]
+        # 1. Gather all lockout variables
+        has_absolute_ci = any(cd(f"abs_ci_{i}") for i in range(1, 11))
+        is_ct_ich = (cd("ct_result") == "Intracranial Hemorrhage (ICH)")
+        refused = cd("treatment_refused")
+        hours = cd("time_since_lkw_hrs")
+        mismatch_met = (cd("mismatch_status") == "✅ Mismatch Present")
         
-        # 🔴 FIX 3: Remove IVT options from the dropdown if an Absolute CI is checked
-        available_options = options.copy()
-        if has_absolute_ci or v_ref:
-            if "Section 1 — IV Thrombolysis (IVT)" in available_options: available_options.remove("Section 1 — IV Thrombolysis (IVT)")
-            if "Section 1 — IVT + EVT" in available_options: available_options.remove("Section 1 — IVT + EVT")
+        # Check PRISMS failure (NIHSS <=5, not disabling, and no override)
+        failed_prisms = (cd("nihss_baseline", 0) <= 5 and 
+                         not cd("prisms_disabling", True) and 
+                         not cd("prisms_override", False))
+
+        # 2. Determine IVT Eligibility Logic Gate
+        ivt_eligible = True
+        ivt_lock_reason = ""
+
+        if is_ct_ich:
+            ivt_eligible = False
+            ivt_lock_reason = "Active Intracranial Hemorrhage detected on CT."
+        elif has_absolute_ci:
+            ivt_eligible = False
+            ivt_lock_reason = "Absolute Contraindication present."
+        elif refused:
+            ivt_eligible = False
+            ivt_lock_reason = "Treatment refused by patient/next-of-kin."
+        elif failed_prisms:
+            ivt_eligible = False
+            ivt_lock_reason = "NIHSS 0-5 and deficits are NOT clearly disabling (Failed PRISMS)."
+        elif hours > 24:
+            ivt_eligible = False
+            ivt_lock_reason = f"Beyond 24-hour window ({hours:.1f}h)."
+        elif hours > 4.5:
+            # EXTENDED WINDOW LOGIC
+            if mismatch_met:
+                ivt_eligible = True
+                st.info(f"💡 **Extended Window Unlock:** Time is {hours:.1f}h, but Advanced Imaging Mismatch criteria are met. IVT is permitted.")
+            else:
+                ivt_eligible = False
+                ivt_lock_reason = f"Extended Window ({hours:.1f}h), but NO imaging mismatch criteria met."
+
+        # 3. Dynamic Pathway Options based on logic
+        options = ["Pending", "Section 2 — Non-Thrombolysis", "Section 3 — EVT Only (no IVT)"]
+        
+        if is_ct_ich:
+            # HARD STOP for Hemorrhage
+            options = ["Pending", "Hemorrhagic Stroke Pathway / Ward Transfer"]
+            card("🚨 **HEMORRHAGE DETECTED:** Ischemic Pathway Terminated.", "danger")
+        elif not ivt_eligible:
+            # Lockout UI
+            card(f"🔒 **IVT Routing Disabled:** {ivt_lock_reason}", "danger")
+        else:
+            # IVT is allowed, add the options to the list
+            options.insert(1, "Section 1 — IV Thrombolysis (IVT)")
+            options.insert(2, "Section 1 — IVT + EVT")
             
+            # Mini-Checklist UI for clarity
+            st.markdown(
+                "<div style='font-size: 0.85rem; color: #16A34A; margin-bottom: 10px;'>"
+                "✅ IVT Pathway Unlocked: No hemorrhage • No absolute CIs • Time/Imaging criteria met"
+                "</div>", unsafe_allow_html=True
+            )
+
+        # 4. Render the radio buttons
         cur = cd("final_routing")
-        if cur not in available_options: cur = "Pending"
+        if cur not in options: cur = "Pending"
             
-        v_route = st.radio("Select Execution Pathway:", available_options, index=available_options.index(cur), key="w_route")
+        v_route = st.radio("Select Execution Pathway:", options, index=options.index(cur), key="w_route")
         set_cd("final_routing", v_route)
 
-        if "IVT" in v_route:
-            # Added min/max values to prevent dangerous dose calculation errors
+        # 5. Render Dose Calculator ONLY if IVT is actually selected
+        if "IVT" in v_route and "Non-Thrombolysis" not in v_route:
             wt = st.number_input("Patient Weight (kg):", min_value=30.0, max_value=250.0, value=float(cd("pt_weight")), step=1.0, key="w_wt")
             set_cd("pt_weight", wt)
             dose, _ = calc_tpa_dose(wt)
-            card(f'💊 <b>Tenecteplase: {dose} mg IV bolus</b> (Max 25 mg)', "success")
-            t_val = st.time_input("Time of IVT:", value=cd("tpa_time"), key="w_tpatime"); set_cd("tpa_time", t_val)
+            card(f'💉 <b>Tenecteplase: {dose} mg IV bolus</b> (Max 25 mg)', "success")
+            t_val = st.time_input("Time of IVT Administration:", value=cd("tpa_time"), key="w_tpatime")
+            set_cd("tpa_time", t_val)
         
         elif "Non-Thrombolysis" in v_route:
             card("💊 <b>ER ACTION REQUIRED:</b> Load with Antiplatelets (e.g., Aspirin 300mg) and start IV Normal Saline in ER before shifting to Stroke Unit.", "warning")
 
         if "EVT" in v_route:
-            current_hour = datetime.datetime.now().hour
-            if current_hour >= 17 or current_hour < 8: # Assuming 5 PM (17:00) to 8 AM cutoff
-                card("⚠️ <b>TIME WARNING:</b> It is past 5:00 PM. IR services for EVT may not be available. Refer out if necessary.", "danger")
+            current_hour = (datetime.datetime.utcnow() + datetime.timedelta(hours=5)).hour
+            if current_hour >= 17 or current_hour < 8:
+                card("⚠️ <b>TIME WARNING:</b> Outside standard hours. IR services for EVT may not be available. Refer out if necessary.", "warning")
             else:
                 card("🧲 <b>EVT CANDIDATE:</b> Call Interventional Radiology and obtain consent immediately.", "info")
 
@@ -1476,7 +1555,7 @@ elif st.session_state.ui["screen"] == "Phase 5: Daily Rounds & Progress Notes":
                 day_num = st.selectbox("Day of Note:", ["1","2","3"], key="pn_day_select")
                 c1, c2, c3 = st.columns(3)
                 with c1: pn_date    = st.date_input("Date:", value=datetime.date.today(), key="pn_date")
-                with c2: pn_time    = st.time_input("Time:", value=datetime.datetime.now().time(), key="pn_time")
+                with c2: pn_time    = st.time_input("Time:", value=(datetime.datetime.utcnow() + datetime.timedelta(hours=5)).time(), key="pn_time")
                 with c3: pn_author = st.text_input("Author (Name & ID):", value=cd("resident") or "", key="pn_auth")
 
                 st.subheader(f"Day {day_num} Progress Note")
